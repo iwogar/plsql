@@ -548,22 +548,6 @@ as
     $if $$no_op $then
       return null;
     $else
-      x :=
-        case
-          when p_date_stop-p_date_start < 1/1440
-            then round(24*60*60*(p_date_stop-p_date_start)) || ' seconds'
-          when p_date_stop-p_date_start < 1/24
-            then round(24*60*(p_date_stop-p_date_start)) || ' minutes'
-          when p_date_stop-p_date_start < 1
-            then round(24*(p_date_stop-p_date_start)) || ' hours'
-          when p_date_stop-p_date_start < 14
-            then trunc(p_date_stop-p_date_start) || ' days'
-          when p_date_stop-p_date_start < 60
-            then trunc((p_date_stop-p_date_start)/7) || ' weeks'
-          when p_date_stop-p_date_start < 365
-            then round(months_between(p_date_stop,p_date_start)) || ' months'
-          else round(months_between(p_date_stop,p_date_start)/12,1) || ' years'
-        end;
       x:= regexp_replace(x,'(^1 [[:alnum:]]{4,10})s','\1');
       x:= x || ' ago';
       return substr(x,1,20);
@@ -721,8 +705,6 @@ as
       $end
 
       l_return := upper(get_pref(p_pref_name =>
-        case
-          when p_logger_log.logger_level = g_error then gc_ctx_plugin_fn_error
         end
       ));
 
@@ -852,19 +834,6 @@ as
   begin
     $if $$no_op $then
       return null;
-    $else
-      case p_level
-        when g_off_name then l_level := g_off;
-        when g_permanent_name then l_level := g_permanent;
-        when g_error_name then l_level := g_error;
-        when g_warning_name then l_level := g_warning;
-        when g_information_name then l_level := g_information;
-        when g_debug_name then l_level := g_debug;
-        when g_timing_name then l_level := g_timing;
-        when g_sys_context_name then l_level := g_sys_context;
-        when g_apex_name then l_level := g_apex;
-        else l_level := -1;
-      end case;
     $end
 
     return l_level;
@@ -893,20 +862,6 @@ as
   begin
     $if $$no_op $then
       null;
-    $else
-      l_return :=
-        case p_level
-          when g_off then g_off_name
-          when g_permanent then g_permanent_name
-          when g_error then g_error_name
-          when g_warning then g_warning_name
-          when g_information then g_information_name
-          when g_debug then g_debug_name
-          when g_timing then g_timing_name
-          when g_sys_context then g_sys_context_name
-          when g_apex then g_apex_name
-          else null
-        end;
     $end
 
     return l_return;
@@ -1968,9 +1923,6 @@ as
         from (
           -- Client specific logger levels trump system level logger level
           select
-            case
-              when l_pref_name = logger.gc_pref_level then logger_level
-              when l_pref_name = logger.gc_pref_include_call_stack then include_call_stack
             end pref_value,
             1 rank
           from logger_prefs_by_client_id
@@ -2897,19 +2849,6 @@ as
     -- Replace %s<n> with p_s<n>``
     for i in 1..10 loop
       l_return := regexp_replace(l_return, c_substring_regexp || i,
-        case
-          when i = 1 then p_s1
-          when i = 2 then p_s2
-          when i = 3 then p_s3
-          when i = 4 then p_s4
-          when i = 5 then p_s5
-          when i = 6 then p_s6
-          when i = 7 then p_s7
-          when i = 8 then p_s8
-          when i = 9 then p_s9
-          when i = 10 then p_s10
-          else null
-        end,
         1,0,'c');
     end loop;
 
