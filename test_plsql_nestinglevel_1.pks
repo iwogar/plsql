@@ -25,6 +25,12 @@ BEGIN
 	      dbms_output.put_line(x); 
 	      x := x + 10; 
 	      IF x > 50 THEN 
+            CASE lala
+                WHEN a THEN r;
+                WHEN b THEN c;
+                WHEN x THEN l;
+                ELSE dupa;
+            END;
 	         exit; 
 	      END IF; 
 	   END LOOP; 
@@ -33,13 +39,3 @@ BEGIN
 	END;
 END pr1;
 
-
------#EXPECT#-----
-RLoc	30
-Mccc	7
-Nl	4
-Nl0+	30
-Nl1+	23
-Nl2+	15
-Nl3+	5
-Nl4+	1
